@@ -2,6 +2,9 @@
 // matching STORAGE_KEY in instagram.js and facebook.js. Every option defaults
 // to on, including the site itself.
 
+// Shown at the bottom so it's easy to tell which version is installed.
+document.getElementById('version').textContent = `Version ${chrome.runtime.getManifest().version}`;
+
 for (const section of document.querySelectorAll('section[data-site]')) {
   const site = section.dataset.site;
   const boxes = [...section.querySelectorAll('input[data-key]')];

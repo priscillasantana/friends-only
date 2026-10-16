@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Friends Only",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Instagram and Facebook with only the people you follow: no algorithm, Reels, suggestions or ads.",
   "icons": {
     "16": "icons/icon16.png",

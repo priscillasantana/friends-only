@@ -25,7 +25,15 @@ It only changes what your own browser tab shows. It never asks for your password
 3. Turn on **Developer mode**.
 4. Click **Load unpacked** and select this folder.
 
-After pulling an update, click the reload icon (↻) on the extension's card and refresh the site.
+After pulling an update, click the reload icon (↻) on the extension's card and refresh the site. The installed version is shown at the bottom of the popup and on the extension's card.
+
+## Versions
+
+The version lives in `manifest.json`; bump it with every change.
+
+- **2.0.1** Show the version number in the popup.
+- **2.0.0** Instagram and Facebook combined into one extension, with an on/off switch per site. Facebook support added. Instagram fixes: suggested posts are hidden whole, and only the Reels tab link is hidden so feed videos stay visible.
+- **1.0.0** Instagram only.
 
 ## How it's organised
 
