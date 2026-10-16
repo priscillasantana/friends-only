@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Instagram Friends Only",
+  "version": "1.0.0",
+  "description": "Opens the Following feed and hides Reels, Explore, suggested posts and ads on instagram.com.",
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.instagram.com/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_start"
+    }
+  ],
+  "action": {
+    "default_title": "Instagram Friends Only",
+    "default_popup": "popup.html"
+  }
+}

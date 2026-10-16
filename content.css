@@ -1,0 +1,10 @@
+/* Nav links. Each rule only applies while its setting is on (class on <html>). */
+html.igf-hide-reels a[href^="/reels/"],
+html.igf-hide-explore a[href="/explore/"] {
+  display: none !important;
+}
+
+/* Posts and blocks that content.js has flagged as not from people you follow. */
+[data-igf-hidden] {
+  display: none !important;
+}
