@@ -4,18 +4,6 @@
 
 A small Chrome/Brave extension that makes Instagram and Facebook show only the people you follow.
 
-**Instagram**
-- Always opens the **Following** feed (newest first, no algorithm)
-- Hides the **Reels** tab and **Explore** (your friends' reels still show)
-- Hides **suggested** posts and "Suggested for you" accounts
-- Hides **sponsored** posts
-
-**Facebook**
-- Always opens the **Friends** feed (most recent first, no algorithm)
-- Hides **Reels** and **Watch** (your friends' videos still show)
-- Hides **suggested** posts, groups, pages and "People you may know"
-- Hides **sponsored** posts
-
 Each site has its own on/off switch in the toolbar popup, and every option can be switched on or off separately.
 
 It only changes what your own browser tab shows. It never asks for your password and never calls Instagram's or Facebook's API.

@@ -4,18 +4,6 @@
 
 Uma pequena extensão para Chrome/Brave que faz o Instagram e o Facebook mostrarem só as pessoas que você segue.
 
-**Instagram**
-- Sempre abre o feed **Seguindo** (mais recentes primeiro, sem algoritmo)
-- Esconde a aba **Reels** e o **Explorar** (os reels dos seus amigos continuam aparecendo)
-- Esconde posts **sugeridos** e as contas de "Sugestões para você"
-- Esconde posts **patrocinados**
-
-**Facebook**
-- Sempre abre o feed **Amigos** (mais recentes primeiro, sem algoritmo)
-- Esconde **Reels** e **Watch** (os vídeos dos seus amigos continuam aparecendo)
-- Esconde posts, grupos e páginas **sugeridos** e "Pessoas que você talvez conheça"
-- Esconde posts **patrocinados**
-
 Cada site tem seu próprio botão de liga/desliga no menu da extensão (o ícone na barra do navegador), e cada opção pode ser ligada ou desligada separadamente.
 
 A extensão só muda o que aparece na sua própria aba do navegador. Ela nunca pede sua senha e nunca acessa a API do Instagram ou do Facebook.
