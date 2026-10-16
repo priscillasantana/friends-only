@@ -1,0 +1,14 @@
+/* Nav links. Each rule only applies while its setting is on (class on <html>). */
+/* Exact menu links only: feed videos link to /watch/?v=… or /reel/<id> and must stay visible. */
+html.fbf-hide-video a[href="/watch/"],
+html.fbf-hide-video a[href="/watch"],
+html.fbf-hide-video a[href="/reels/"],
+html.fbf-hide-video a[href^="/reel/?s="],
+html.fbf-hide-video a[href="/reel/"] {
+  display: none !important;
+}
+
+/* Feed posts and blocks that content.js has flagged as not from your friends. */
+[data-fbf-hidden] {
+  display: none !important;
+}

@@ -1,15 +1,22 @@
-# Instagram Friends Only
+# Friends Only
 
-A small Chrome/Brave extension that makes instagram.com show only the people you follow.
+A small Chrome/Brave extension that makes Instagram and Facebook show only the people you follow.
 
+**Instagram**
 - Always opens the **Following** feed (newest first, no algorithm)
-- Hides the **Reels** tab and **Explore**
+- Hides the **Reels** tab and **Explore** (your friends' reels still show)
 - Hides **suggested** posts and "Suggested for you" accounts
 - Hides **sponsored** posts
 
-Each option can be switched on or off from the extension's toolbar popup.
+**Facebook**
+- Always opens the **Friends** feed (most recent first, no algorithm)
+- Hides **Reels** and **Watch** (your friends' videos still show)
+- Hides **suggested** posts, groups, pages and "People you may know"
+- Hides **sponsored** posts
 
-It only changes what your own browser tab shows. It never asks for your password and never calls Instagram's API.
+Each site has its own on/off switch in the toolbar popup, and every option can be switched on or off separately.
+
+It only changes what your own browser tab shows. It never asks for your password and never calls Instagram's or Facebook's API.
 
 ## Install
 
@@ -18,8 +25,16 @@ It only changes what your own browser tab shows. It never asks for your password
 3. Turn on **Developer mode**.
 4. Click **Load unpacked** and select this folder.
 
+After pulling an update, click the reload icon (↻) on the extension's card and refresh the site.
+
+## How it's organised
+
+- `instagram.js` / `instagram.css` only run on instagram.com
+- `facebook.js` / `facebook.css` only run on facebook.com
+- `popup.html` / `popup.js` are the settings popup
+
 ## Limitations
 
-- Works on instagram.com in the browser only, not the phone app.
-- Instagram has no stable markers for suggested posts, so they're detected by their "Follow" button and headings (English, Portuguese and Spanish). Layout changes on Instagram's side can break this.
-- Relies on `instagram.com/?variant=following` for the Following feed.
+- Works in the browser only, not the phone apps.
+- Neither site has stable markers for suggested posts or ads, so they're detected by labels and "Follow"/"Join" buttons (English, Portuguese and Spanish). Facebook also scrambles its "Sponsored" label. Layout changes on either site can break detection.
+- Relies on `instagram.com/?variant=following` and `facebook.com/?filter=friends&sk=h_chr` for the friends-only feeds.

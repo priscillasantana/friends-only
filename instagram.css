@@ -1,5 +1,6 @@
 /* Nav links. Each rule only applies while its setting is on (class on <html>). */
-html.igf-hide-reels a[href^="/reels/"],
+/* Exact match only: feed videos link to /reels/<id>/ and must stay visible. */
+html.igf-hide-reels a[href="/reels/"],
 html.igf-hide-explore a[href="/explore/"] {
   display: none !important;
 }

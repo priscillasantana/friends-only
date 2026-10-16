@@ -1,8 +1,12 @@
-// Instagram Friends Only: keeps instagram.com on the Following feed and hides
-// anything that isn't from accounts you follow. Runs only in your own tab; it
-// never reads your password or calls Instagram's API.
+// Friends Only, Instagram part: keeps instagram.com on the Following feed and
+// hides anything that isn't from accounts you follow. Runs only in your own
+// tab; it never reads your password or calls Instagram's API.
+
+// Stored under this key in chrome.storage.sync; must match popup.js.
+const STORAGE_KEY = 'instagram';
 
 const DEFAULTS = {
+  enabled: true,
   followingFeed: true,
   hideReels: true,
   hideExplore: true,
@@ -29,7 +33,8 @@ const text = (el) => (el.textContent || '').trim().toLowerCase();
 // --- Navigation -------------------------------------------------------------
 
 function blockedPath(pathname) {
-  if (settings.hideReels && pathname.startsWith('/reels/')) return true;
+  // Only the Reels tab itself; a friend's reel at /reels/<id>/ stays reachable.
+  if (settings.hideReels && pathname === '/reels/') return true;
   if (settings.hideExplore && pathname === '/explore/') return true;
   return false;
 }
@@ -80,11 +85,24 @@ function hasLabel(root, labels) {
     .some((el) => el.children.length === 0 && labels.includes(text(el)));
 }
 
+// Instagram's <article> can cover only the header and photo, with the likes and
+// caption in a sibling. Climb to the wrapper that holds this one post, i.e. the
+// last ancestor before one that also contains other posts.
+function postContainer(article) {
+  let node = article;
+  while (node.parentElement && node.parentElement !== document.body) {
+    const parent = node.parentElement;
+    if (parent.matches('main, [role="main"]') || parent.querySelectorAll('article').length > 1) break;
+    node = parent;
+  }
+  return node;
+}
+
 // From a "Suggested for you" heading, climb to the smallest block that holds
 // the suggestion list (several Follow buttons), without swallowing real posts.
 function hideSuggestionBlock(heading) {
   const post = heading.closest('article');
-  if (post) return hide(post);
+  if (post) return hide(postContainer(post));
   let node = heading.parentElement;
   for (let i = 0; i < 8 && node && node !== document.body; i++) {
     if (node.matches('main, [role="main"], nav, [role="navigation"]') || node.querySelector('article')) return;
@@ -96,11 +114,12 @@ function hideSuggestionBlock(heading) {
 function sweep() {
   if (!document.body) return;
 
-  for (const post of document.querySelectorAll('article:not([data-igf-hidden])')) {
+  for (const post of document.querySelectorAll('article')) {
+    if (post.closest('[data-igf-hidden]')) continue;
     // Posts from accounts you already follow have no Follow button in their header.
     const header = post.querySelector('header') || post;
-    if (settings.hideSuggested && followButtons(header).length > 0) hide(post);
-    else if (settings.hideAds && hasLabel(header, SPONSORED_LABELS)) hide(post);
+    if (settings.hideSuggested && followButtons(header).length > 0) hide(postContainer(post));
+    else if (settings.hideAds && hasLabel(header, SPONSORED_LABELS)) hide(postContainer(post));
   }
 
   if (settings.hideSuggested) {
@@ -129,8 +148,14 @@ const observer = new MutationObserver(() => {
   sweepTimer = setTimeout(sweep, 150);
 });
 
-chrome.storage.sync.get(DEFAULTS, (stored) => {
-  settings = { ...DEFAULTS, ...stored };
+// With the site switched off, every option counts as off.
+function loadSettings(stored) {
+  const s = { ...DEFAULTS, ...stored };
+  settings = s.enabled ? s : Object.fromEntries(Object.keys(s).map((k) => [k, false]));
+}
+
+chrome.storage.sync.get({ [STORAGE_KEY]: DEFAULTS }, (stored) => {
+  loadSettings(stored[STORAGE_KEY]);
   if (route()) return;
   applySettings();
   observer.observe(document.documentElement, { childList: true, subtree: true });
@@ -145,7 +170,7 @@ chrome.storage.sync.get(DEFAULTS, (stored) => {
 });
 
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area !== 'sync') return;
-  for (const [key, { newValue }] of Object.entries(changes)) settings[key] = newValue;
+  if (area !== 'sync' || !changes[STORAGE_KEY]) return;
+  loadSettings(changes[STORAGE_KEY].newValue);
   applySettings();
 });

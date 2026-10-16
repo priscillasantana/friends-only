@@ -3,21 +3,46 @@
 <head>
   <meta charset="utf-8">
   <style>
-    body { font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; padding: 14px 16px; width: 250px; color: #111; background: #fff; }
-    h1 { font-size: 15px; margin: 0 0 10px; }
-    label { display: flex; align-items: center; gap: 8px; padding: 5px 0; cursor: pointer; }
-    p { color: #666; font-size: 12px; margin: 10px 0 0; }
-    @media (prefers-color-scheme: dark) { body { background: #1e1e1e; color: #eee; } p { color: #aaa; } }
+    :root { --fg: #111; --muted: #666; --bg: #fff; --line: #e5e5e5; --on: #d62976; }
+    @media (prefers-color-scheme: dark) { :root { --fg: #eee; --muted: #aaa; --bg: #1e1e1e; --line: #333; } }
+    body { font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; padding: 12px 16px 14px; width: 270px; color: var(--fg); background: var(--bg); }
+    h1 { font-size: 15px; margin: 0 0 4px; }
+    section { border-top: 1px solid var(--line); padding-top: 8px; margin-top: 8px; }
+    .site { display: flex; align-items: center; justify-content: space-between; font-weight: 600; padding: 4px 0; cursor: pointer; }
+    .site input { appearance: none; width: 34px; height: 20px; border-radius: 10px; background: var(--line); position: relative; cursor: pointer; margin: 0; transition: background .15s; }
+    .site input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform .15s; }
+    .site input:checked { background: var(--on); }
+    .site input:checked::after { transform: translateX(14px); }
+    .options label { display: flex; align-items: center; gap: 8px; padding: 3px 0 3px 2px; cursor: pointer; }
+    .options.off { opacity: .4; pointer-events: none; }
+    p { color: var(--muted); font-size: 12px; margin: 10px 0 0; }
   </style>
 </head>
 <body>
-  <h1>Instagram Friends Only</h1>
-  <label><input type="checkbox" id="followingFeed"> Always open the Following feed</label>
-  <label><input type="checkbox" id="hideReels"> Hide Reels tab</label>
-  <label><input type="checkbox" id="hideExplore"> Hide Explore</label>
-  <label><input type="checkbox" id="hideSuggested"> Hide suggested posts &amp; accounts</label>
-  <label><input type="checkbox" id="hideAds"> Hide sponsored posts</label>
-  <p>Changes apply right away in open Instagram tabs.</p>
+  <h1>Friends Only</h1>
+
+  <section data-site="instagram">
+    <label class="site">Instagram <input type="checkbox" data-key="enabled" aria-label="Instagram on"></label>
+    <div class="options">
+      <label><input type="checkbox" data-key="followingFeed"> Always open the Following feed</label>
+      <label><input type="checkbox" data-key="hideReels"> Hide Reels tab</label>
+      <label><input type="checkbox" data-key="hideExplore"> Hide Explore</label>
+      <label><input type="checkbox" data-key="hideSuggested"> Hide suggested posts &amp; accounts</label>
+      <label><input type="checkbox" data-key="hideAds"> Hide sponsored posts</label>
+    </div>
+  </section>
+
+  <section data-site="facebook">
+    <label class="site">Facebook <input type="checkbox" data-key="enabled" aria-label="Facebook on"></label>
+    <div class="options">
+      <label><input type="checkbox" data-key="friendsFeed"> Always open the Friends feed</label>
+      <label><input type="checkbox" data-key="hideVideo"> Hide Reels &amp; Watch</label>
+      <label><input type="checkbox" data-key="hideSuggested"> Hide suggested posts, groups &amp; people</label>
+      <label><input type="checkbox" data-key="hideAds"> Hide sponsored posts</label>
+    </div>
+  </section>
+
+  <p>Changes apply right away in open tabs.</p>
   <script src="popup.js"></script>
 </body>
 </html>
