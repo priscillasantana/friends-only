@@ -1,5 +1,7 @@
 # Friends Only
 
+**English** · [Português](README.pt-BR.md)
+
 A small Chrome/Brave extension that makes Instagram and Facebook show only the people you follow.
 
 **Instagram**
@@ -20,9 +22,9 @@ It only changes what your own browser tab shows. It never asks for your password
 
 ## Install
 
-1. Download or clone this repo.
-2. Open `chrome://extensions` (or `brave://extensions`).
-3. Turn on **Developer mode**.
+1. Download or clone this repo. To download, click **Code → Download ZIP** here on GitHub and unzip the file.
+2. Open `chrome://extensions` (or `brave://extensions`) by typing it in the address bar.
+3. Turn on **Developer mode** (top right).
 4. Click **Load unpacked** and select this folder.
 
 After pulling an update, click the reload icon (↻) on the extension's card and refresh the site. The installed version is shown at the bottom of the popup and on the extension's card.
