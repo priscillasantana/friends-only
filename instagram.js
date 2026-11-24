@@ -12,9 +12,15 @@ const DEFAULTS = {
   hideExplore: true,
   hideSuggested: true,
   hideAds: true,
+  hidePartnerships: true,
 };
 
 const FOLLOWING_URL = '/?variant=following';
+// Search on its own, without the Explore grid (the phone-width layout's search page).
+const SEARCH_URL = '/explore/search/';
+// Below this width Instagram swaps the sidebar for a bottom tab bar, where the
+// magnifier tab is a plain link to /explore/ instead of opening a search panel.
+const NARROW_LAYOUT = 768;
 
 // Instagram's web UI labels, in English, Portuguese and Spanish (lowercased).
 const FOLLOW_LABELS = ['follow', 'seguir'];
@@ -24,6 +30,13 @@ const SUGGESTED_LABELS = [
   'sugerencias para ti', 'publicaciones sugeridas', 'sugerencias',
 ];
 const SPONSORED_LABELS = ['sponsored', 'patrocinado', 'publicidad'];
+// Substrings of the Search link's label ("Search", "Pesquisa", "Buscar", "Búsqueda").
+const SEARCH_LABELS = ['search', 'pesquis', 'busca', 'búsq'];
+// "Paid partnership with <brand>" under the name of an account you follow.
+const PARTNERSHIP_PREFIXES = ['paid partnership', 'parceria paga', 'colaboración pagada', 'asociación pagada'];
+
+const startsWithAny = (root, prefixes) => [...root.querySelectorAll('span, div, a')]
+  .some((el) => el.textContent.length < 120 && prefixes.some((p) => text(el).startsWith(p)));
 
 let settings = { ...DEFAULTS };
 let lastHref = location.href;
@@ -37,6 +50,14 @@ function blockedPath(pathname) {
   if (settings.hideReels && pathname === '/reels/') return true;
   if (settings.hideExplore && pathname === '/explore/') return true;
   return false;
+}
+
+// The Search entry, as opposed to the Explore link, judged by its icon's label
+// or its text. In the narrow layout one tab is both, labelled "Search & explore".
+function isSearchLink(link) {
+  const labels = [link.getAttribute('aria-label'), link.textContent,
+    ...[...link.querySelectorAll('[aria-label], title')].map((el) => el.getAttribute('aria-label') || el.textContent)];
+  return labels.some((l) => l && SEARCH_LABELS.some((s) => l.toLowerCase().includes(s)));
 }
 
 // Returns true when it sent the tab somewhere else.
@@ -61,6 +82,16 @@ document.addEventListener('click', (event) => {
   if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey) return;
   const url = new URL(link.href, location.origin);
   if (url.origin !== location.origin) return;
+  // Search stays usable with Explore hidden: on desktop Instagram opens its
+  // search panel; in the narrow layout go to the search page, not the grid.
+  if (settings.hideExplore && url.pathname === '/explore/' && isSearchLink(link)) {
+    if (window.innerWidth < NARROW_LAYOUT) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      location.assign(SEARCH_URL);
+    }
+    return;
+  }
   const toHome = settings.followingFeed && url.pathname === '/' && !url.searchParams.has('variant');
   if (toHome || blockedPath(url.pathname)) {
     event.preventDefault();
@@ -114,12 +145,18 @@ function hideSuggestionBlock(heading) {
 function sweep() {
   if (!document.body) return;
 
+  // Lets instagram.css hide the Explore link but keep Search.
+  for (const link of document.querySelectorAll('a[href="/explore/"]')) {
+    link.toggleAttribute('data-igf-search', isSearchLink(link));
+  }
+
   for (const post of document.querySelectorAll('article')) {
     if (post.closest('[data-igf-hidden]')) continue;
     // Posts from accounts you already follow have no Follow button in their header.
     const header = post.querySelector('header') || post;
     if (settings.hideSuggested && followButtons(header).length > 0) hide(postContainer(post));
     else if (settings.hideAds && hasLabel(header, SPONSORED_LABELS)) hide(postContainer(post));
+    else if (settings.hidePartnerships && startsWithAny(header, PARTNERSHIP_PREFIXES)) hide(postContainer(post));
   }
 
   if (settings.hideSuggested) {

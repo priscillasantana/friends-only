@@ -1,7 +1,8 @@
 /* Nav links. Each rule only applies while its setting is on (class on <html>). */
 /* Exact match only: feed videos link to /reels/<id>/ and must stay visible. */
+/* Search can also link to /explore/; instagram.js marks it so it stays visible. */
 html.igf-hide-reels a[href="/reels/"],
-html.igf-hide-explore a[href="/explore/"] {
+html.igf-hide-explore a[href="/explore/"]:not([data-igf-search]) {
   display: none !important;
 }
 

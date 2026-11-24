@@ -11,6 +11,7 @@ const DEFAULTS = {
   hideVideo: true,
   hideSuggested: true,
   hideAds: true,
+  hidePartnerships: true,
 };
 
 // Feeds tab, filtered to Friends, most recent first.
@@ -27,6 +28,11 @@ const SUGGESTED_LABELS = [
   'grupos sugeridos para ti',
 ];
 const SPONSORED_LABELS = ['sponsored', 'patrocinado', 'publicidad'];
+// "Paid partnership with <brand>" under the name of a person or page you follow.
+const PARTNERSHIP_PREFIXES = ['paid partnership', 'parceria paga', 'colaboración pagada', 'asociación pagada'];
+
+const startsWithAny = (root, prefixes) => [...root.querySelectorAll('span, div, a')]
+  .some((el) => el.textContent.length < 120 && prefixes.some((p) => text(el).startsWith(p)));
 
 let settings = { ...DEFAULTS };
 let lastHref = location.href;
@@ -92,10 +98,15 @@ function hasJoinOrFollowButton(root) {
 
 // Letters only, lowercased: "Pa-tro ci·na do" -> "patrocinado".
 const lettersOnly = (s) => (s || '').toLowerCase().replace(/[^\p{L}]/gu, '');
-const isSponsoredWord = (s) => SPONSORED_LABELS.includes(lettersOnly(s));
+// Facebook also shuffles the letters in the page and puts them back in order
+// with CSS, so compare the letters regardless of order too.
+const sortedLetters = (s) => [...lettersOnly(s)].sort().join('');
+const SPONSORED_SORTED = SPONSORED_LABELS.map(sortedLetters);
+const isSponsoredWord = (s) => SPONSORED_LABELS.includes(lettersOnly(s)) || SPONSORED_SORTED.includes(sortedLetters(s));
 
 // Ad call-to-action buttons. Posts from friends don't have these.
 const AD_BUTTON_LABELS = [
+  'view details', 'see details', 'ver detalhes', 'ver detalles', 'ver produto', 'ver producto',
   'learn more', 'shop now', 'sign up', 'book now', 'install now', 'send message',
   'get offer', 'order now', 'apply now', 'get quote', 'contact us', 'subscribe', 'watch more',
   'saiba mais', 'comprar agora', 'cadastre-se', 'reservar agora', 'instalar agora',
@@ -106,6 +117,10 @@ const AD_BUTTON_LABELS = [
 
 // Facebook disguises the "Sponsored" label, so look for it several ways.
 function isAd(unit) {
+  // 0. Facebook tags the parts of each post; only ads carry a call-to-action
+  //    part ("cta", or "cta-0", "cta-1"… in a carousel). Friends' posts don't.
+  if (unit.querySelector('[data-ad-rendering-role^="cta"]')) return true;
+
   // 1. Plain text, or text split up with junk letters hidden in between
   //    (innerText skips the hidden ones).
   for (const el of unit.querySelectorAll('a, span')) {
@@ -113,14 +128,15 @@ function isAd(unit) {
     if (len >= 9 && len <= 80 && (isSponsoredWord(el.textContent) || isSponsoredWord(el.innerText))) return true;
   }
   // 2. The word kept in an accessibility label, or elsewhere in the page and
-  //    pointed to by id (aria-labelledby, or an SVG <use> reference).
+  //    pointed to by id (aria-labelledby, aria-describedby, or an SVG <use> reference).
   for (const el of unit.querySelectorAll('[aria-label]')) {
     if (isSponsoredWord(el.getAttribute('aria-label'))) return true;
   }
-  for (const el of unit.querySelectorAll('[aria-labelledby], use')) {
-    const ref = el.getAttribute('aria-labelledby') || el.getAttribute('href') || el.getAttribute('xlink:href') || '';
-    for (const id of ref.replace(/^#/, '').split(/\s+/)) {
-      const target = id && document.getElementById(id);
+  for (const el of unit.querySelectorAll('[aria-labelledby], [aria-describedby], use')) {
+    const ref = [el.getAttribute('aria-labelledby'), el.getAttribute('aria-describedby'),
+      el.getAttribute('href'), el.getAttribute('xlink:href')].filter(Boolean).join(' ');
+    for (const id of ref.split(/\s+/)) {
+      const target = id && document.getElementById(id.replace(/^#/, ''));
       if (target && isSponsoredWord(target.textContent)) return true;
     }
   }
@@ -139,6 +155,7 @@ function sweep() {
   for (const unit of document.querySelectorAll(FEED_UNITS)) {
     if (unit.closest('[data-fbf-hidden]')) continue;
     if (settings.hideAds && isAd(unit)) hide(unit);
+    else if (settings.hidePartnerships && startsWithAny(unit, PARTNERSHIP_PREFIXES)) hide(unit);
     else if (settings.hideSuggested && (hasLabel(unit, SUGGESTED_LABELS) || hasJoinOrFollowButton(unit))) hide(unit);
   }
 }
