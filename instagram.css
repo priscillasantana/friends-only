@@ -6,6 +6,13 @@ html.igf-hide-explore a[href="/explore/"]:not([data-igf-search]) {
   display: none !important;
 }
 
+/* The Explore page stays reachable because Search leads there, but without
+   its grid of posts: only the search box and its results are left. */
+html.igf-explore-page main a[href*="/p/"],
+html.igf-explore-page main a[href*="/reel/"] {
+  display: none !important;
+}
+
 /* Posts and blocks that content.js has flagged as not from people you follow. */
 [data-igf-hidden] {
   display: none !important;

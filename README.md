@@ -21,6 +21,7 @@ After pulling an update, click the reload icon (↻) on the extension's card and
 
 The version lives in `manifest.json`; bump it with every change.
 
+- **2.1.2** Instagram: clicking Search no longer sends you back to the Following feed. With Explore hidden, the Explore page still opens (Search uses it) but its grid of posts is hidden, so only search is left.
 - **2.1.1** Instagram: the Search button stays visible and works while Explore is hidden (desktop search panel, and the search page in the narrow layout).
 - **2.1.0** New "Hide paid partnerships" switch on both sites (on by default). Facebook: recognises ads by the call-to-action marker Facebook puts on them, plus "Sponsored" labels with shuffled letters and "View details" buttons.
 - **2.0.1** Show the version number in the popup.

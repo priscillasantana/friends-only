@@ -16,11 +16,6 @@ const DEFAULTS = {
 };
 
 const FOLLOWING_URL = '/?variant=following';
-// Search on its own, without the Explore grid (the phone-width layout's search page).
-const SEARCH_URL = '/explore/search/';
-// Below this width Instagram swaps the sidebar for a bottom tab bar, where the
-// magnifier tab is a plain link to /explore/ instead of opening a search panel.
-const NARROW_LAYOUT = 768;
 
 // Instagram's web UI labels, in English, Portuguese and Spanish (lowercased).
 const FOLLOW_LABELS = ['follow', 'seguir'];
@@ -47,9 +42,9 @@ const text = (el) => (el.textContent || '').trim().toLowerCase();
 
 function blockedPath(pathname) {
   // Only the Reels tab itself; a friend's reel at /reels/<id>/ stays reachable.
-  if (settings.hideReels && pathname === '/reels/') return true;
-  if (settings.hideExplore && pathname === '/explore/') return true;
-  return false;
+  // /explore/ isn't blocked: Instagram's Search opens it too. Its post grid is
+  // hidden instead (see markExplorePage), which keeps the search box usable.
+  return settings.hideReels && pathname === '/reels/';
 }
 
 // The Search entry, as opposed to the Explore link, judged by its icon's label
@@ -60,8 +55,15 @@ function isSearchLink(link) {
   return labels.some((l) => l && SEARCH_LABELS.some((s) => l.toLowerCase().includes(s)));
 }
 
+// Lets instagram.css hide the Explore grid while you're on /explore/.
+function markExplorePage() {
+  document.documentElement.classList.toggle('igf-explore-page',
+    settings.hideExplore && location.pathname === '/explore/');
+}
+
 // Returns true when it sent the tab somewhere else.
 function route() {
+  markExplorePage();
   const { pathname, search } = location;
   const homeTarget = settings.followingFeed ? FOLLOWING_URL : '/';
   if (settings.followingFeed && pathname === '/' && !new URLSearchParams(search).has('variant')) {
@@ -82,16 +84,6 @@ document.addEventListener('click', (event) => {
   if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey) return;
   const url = new URL(link.href, location.origin);
   if (url.origin !== location.origin) return;
-  // Search stays usable with Explore hidden: on desktop Instagram opens its
-  // search panel; in the narrow layout go to the search page, not the grid.
-  if (settings.hideExplore && url.pathname === '/explore/' && isSearchLink(link)) {
-    if (window.innerWidth < NARROW_LAYOUT) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      location.assign(SEARCH_URL);
-    }
-    return;
-  }
   const toHome = settings.followingFeed && url.pathname === '/' && !url.searchParams.has('variant');
   if (toHome || blockedPath(url.pathname)) {
     event.preventDefault();

@@ -21,6 +21,7 @@ Depois de baixar uma atualização, clique no ícone de recarregar (↻) no cart
 
 A versão fica no `manifest.json` e deve ser atualizada a cada mudança.
 
+- **2.1.2** Instagram: clicar em Pesquisa não leva mais de volta para o feed Seguindo. Com o Explorar escondido, a página do Explorar ainda abre (a Pesquisa usa ela), mas a grade de publicações fica escondida, então só sobra a pesquisa.
 - **2.1.1** Instagram: o botão de Pesquisa continua visível e funcionando com o Explorar escondido (painel de pesquisa no computador e página de pesquisa no layout estreito).
 - **2.1.0** Nova opção "Hide paid partnerships" (esconder parcerias pagas) nos dois sites, ligada por padrão. Facebook: reconhece anúncios pelo marcador de botão de ação que o Facebook coloca neles, além do "Patrocinado" com letras embaralhadas e dos botões "Ver detalhes".
 - **2.0.1** Mostra o número da versão no menu da extensão.
